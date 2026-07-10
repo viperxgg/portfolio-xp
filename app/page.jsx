@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Desktop from "../components/Desktop";
+import { playStartup } from "../lib/sounds";
 
 function LoginScreen({ onLogin }) {
   return (
@@ -62,7 +63,15 @@ function ShutdownScreen({ onRestart }) {
 export default function Home() {
   const [phase, setPhase] = useState("login");
 
-  if (phase === "login") return <LoginScreen onLogin={() => setPhase("desktop")} />;
+  if (phase === "login")
+    return (
+      <LoginScreen
+        onLogin={() => {
+          playStartup();
+          setPhase("desktop");
+        }}
+      />
+    );
   if (phase === "off") return <ShutdownScreen onRestart={() => setPhase("login")} />;
   return <Desktop onLogOff={() => setPhase("login")} onShutDown={() => setPhase("off")} />;
 }

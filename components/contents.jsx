@@ -1,6 +1,8 @@
 "use client";
 
-import { FolderIcon, ComputerIcon, DocIcon, GlobeIcon, ChatIcon, MailIcon, BinIcon, CVIcon } from "./Icons";
+import { FolderIcon, ComputerIcon, DocIcon, GlobeIcon, ChatIcon, MailIcon, BinIcon, CVIcon, GameIcon, NotepadIcon, PaintIcon } from "./Icons";
+import Minesweeper from "./Minesweeper";
+import Paint from "./Paint";
 
 export const PROJECTS = [
   {
@@ -180,6 +182,44 @@ function ContactWindow() {
   );
 }
 
+function NotepadWindow() {
+  const story = `azzam.txt
+────────────────────────────
+
+Hi, I'm Azzam. 👋
+
+I spent years in Dubai selling phones, then insurance.
+Good training, honestly — you learn to listen to what
+people actually need.
+
+Then I moved to the north of Sweden. New language,
+new life, long winters.
+
+In 2025 I started building for the web — with AI as my
+power tool, not my replacement. I direct, review and
+own every line; the AI just helps me move fast.
+
+Since then I've shipped:
+  • a 300+ page product guide with its own AI advisor
+  • a campaign site built in under six hours
+  • a booking & food-ordering system for the place I work
+  • a QR restaurant menu with a real-time kitchen panel
+
+This desktop you're clicking around in? Also mine.
+Next.js, one weekend of fun.
+
+The lesson from the phone-shop days still holds:
+be honest, and people come back.
+
+— Azzam
+hello@smartartai.se`;
+  return (
+    <div className="xp-notepad">
+      <textarea defaultValue={story} spellCheck={false} />
+    </div>
+  );
+}
+
 function RecycleWindow() {
   return (
     <div className="xp-recycle">
@@ -232,6 +272,24 @@ export function buildRegistry(openWindow) {
       size: { w: 460, h: 340 },
       content: <RecycleWindow />,
     },
+    minesweeper: {
+      title: "Minesweeper",
+      icon: <GameIcon />,
+      size: { w: 330, h: 470 },
+      content: <Minesweeper />,
+    },
+    notepad: {
+      title: "azzam.txt — Notepad",
+      icon: <NotepadIcon />,
+      size: { w: 500, h: 520 },
+      content: <NotepadWindow />,
+    },
+    paint: {
+      title: "untitled — Paint",
+      icon: <PaintIcon />,
+      size: { w: 680, h: 560 },
+      content: <Paint />,
+    },
   };
   for (const p of PROJECTS) {
     reg[`project-${p.id}`] = {
@@ -249,6 +307,9 @@ export const DESKTOP_ICONS = [
   { id: "projects", label: "My Projects", Icon: FolderIcon },
   { id: "cv", label: "My CV", Icon: CVIcon },
   { id: "elin", label: "Fråga Elin", Icon: ChatIcon },
+  { id: "notepad", label: "azzam.txt", Icon: NotepadIcon },
+  { id: "paint", label: "Paint", Icon: PaintIcon },
+  { id: "minesweeper", label: "Minesweeper", Icon: GameIcon },
   { id: "contact", label: "Contact Me", Icon: MailIcon },
   { id: "recycle", label: "Recycle Bin", Icon: BinIcon },
 ];

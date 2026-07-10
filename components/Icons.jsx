@@ -98,6 +98,33 @@ export function GameIcon() {
   );
 }
 
+export function NotepadIcon() {
+  return (
+    <svg width={S} height={S} viewBox="0 0 32 32">
+      <rect x="6" y="3" width="20" height="26" rx="1.5" fill="#fdfdf5" stroke="#8a8577" />
+      <rect x="6" y="3" width="20" height="4" fill="#b9cde8" stroke="#8a8577" />
+      <rect x="9" y="11" width="14" height="1.4" fill="#7a8aa5" />
+      <rect x="9" y="15" width="14" height="1.4" fill="#7a8aa5" />
+      <rect x="9" y="19" width="14" height="1.4" fill="#7a8aa5" />
+      <rect x="9" y="23" width="9" height="1.4" fill="#7a8aa5" />
+      <path d="M22 20l6-6 2.5 2.5-6 6L21 24l1-4z" fill="#f4b800" stroke="#8a6d00" strokeWidth="0.8" />
+    </svg>
+  );
+}
+
+export function PaintIcon() {
+  return (
+    <svg width={S} height={S} viewBox="0 0 32 32">
+      <path d="M16 4c7 0 12 4.6 12 10.5 0 4-2.7 6-5.5 6H19c-1.6 0-2.3 1-1.7 2.2.7 1.4.2 3.3-2 3.3C9 26 4 21.4 4 15 4 8.8 9 4 16 4z" fill="#e8e2d6" stroke="#8a8577" />
+      <circle cx="10.5" cy="12" r="2" fill="#c62828" />
+      <circle cx="16" cy="9.5" r="2" fill="#f4b800" />
+      <circle cx="21.5" cy="12" r="2" fill="#2e7d32" />
+      <circle cx="9.5" cy="18" r="2" fill="#1d3fbf" />
+      <path d="M24 22l4-9 2 1-3.4 9.2c-.4 1-1.6 1.4-2.5.8-.8-.5-.6-1.4-.1-2z" fill="#b06c3a" stroke="#7a4a26" strokeWidth="0.7" />
+    </svg>
+  );
+}
+
 export function CVIcon() {
   return (
     <svg width={S} height={S} viewBox="0 0 32 32">

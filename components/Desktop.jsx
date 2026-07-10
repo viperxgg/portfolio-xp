@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Window from "./Window";
 import { buildRegistry, DESKTOP_ICONS } from "./contents";
+import { playOpen, playClose, playMinimize } from "../lib/sounds";
 
 const CLIPPY_TIPS = [
   "Hi! I'm Clippy 📎 It looks like you want to get to know Azzam. Double-click “My Projects” to see what he builds!",
@@ -39,6 +40,7 @@ export default function Desktop({ onLogOff, onShutDown }) {
   }, []);
 
   const openWindow = useCallback((id) => {
+    playOpen();
     setWins((prev) => {
       const existing = prev.find((w) => w.id === id);
       zRef.current += 1;
@@ -69,8 +71,14 @@ export default function Desktop({ onLogOff, onShutDown }) {
     });
   }, []);
 
-  const closeWindow = (id) => setWins((p) => p.filter((w) => w.id !== id));
-  const minimizeWindow = (id) => setWins((p) => p.map((w) => (w.id === id ? { ...w, minimized: true } : w)));
+  const closeWindow = (id) => {
+    playClose();
+    setWins((p) => p.filter((w) => w.id !== id));
+  };
+  const minimizeWindow = (id) => {
+    playMinimize();
+    setWins((p) => p.map((w) => (w.id === id ? { ...w, minimized: true } : w)));
+  };
   const maximizeWindow = (id) =>
     setWins((p) => p.map((w) => (w.id === id ? { ...w, maximized: !w.maximized } : w)));
   const focusWindow = (id) => {
@@ -152,6 +160,9 @@ export default function Desktop({ onLogOff, onShutDown }) {
             <button onClick={() => { openWindow("cv"); setStartOpen(false); }}>📄 My CV</button>
             <button onClick={() => { openWindow("elin"); setStartOpen(false); }}>💬 Fråga Elin</button>
             <button onClick={() => { openWindow("contact"); setStartOpen(false); }}>✉️ Contact Me</button>
+            <button onClick={() => { openWindow("notepad"); setStartOpen(false); }}>📝 azzam.txt</button>
+            <button onClick={() => { openWindow("paint"); setStartOpen(false); }}>🎨 Paint</button>
+            <button onClick={() => { openWindow("minesweeper"); setStartOpen(false); }}>💣 Minesweeper</button>
             <a href="https://www.smartartai.se/portfolio" target="_blank" rel="noopener noreferrer">
               <button>🌐 Portfolio hub</button>
             </a>

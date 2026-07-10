@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f57c4"/>
+      <stop offset="0.35" stop-color="#3f7fdd"/>
+      <stop offset="0.62" stop-color="#8db9ec"/>
+      <stop offset="0.78" stop-color="#cfe6f8"/>
+    </linearGradient>
+    <linearGradient id="hillLight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fd44a"/>
+      <stop offset="0.45" stop-color="#5cb52e"/>
+      <stop offset="1" stop-color="#2e7d1d"/>
+    </linearGradient>
+    <linearGradient id="hillShade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6dbd35"/>
+      <stop offset="1" stop-color="#256614"/>
+    </linearGradient>
+    <filter id="blur18" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="blur8" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#sky)"/>
+
+  <!-- clouds -->
+  <g fill="#ffffff" opacity="0.9" filter="url(#blur18)">
+    <ellipse cx="330" cy="150" rx="180" ry="42"/>
+    <ellipse cx="430" cy="120" rx="120" ry="34"/>
+    <ellipse cx="1150" cy="220" rx="220" ry="48"/>
+    <ellipse cx="1290" cy="185" rx="130" ry="36"/>
+    <ellipse cx="820" cy="90" rx="150" ry="30"/>
+  </g>
+  <g fill="#ffffff" opacity="0.65" filter="url(#blur8)">
+    <ellipse cx="600" cy="300" rx="110" ry="20"/>
+    <ellipse cx="1450" cy="330" rx="140" ry="24"/>
+    <ellipse cx="150" cy="380" rx="120" ry="18"/>
+  </g>
+
+  <!-- haze at horizon -->
+  <rect y="600" width="1600" height="120" fill="#e8f4fb" opacity="0.55" filter="url(#blur18)"/>
+
+  <!-- far hill (left) -->
+  <path d="M0,690 C260,600 520,610 760,680 L760,900 L0,900 Z" fill="url(#hillShade)"/>
+  <!-- main rolling hill -->
+  <path d="M0,760 C300,640 700,600 1000,660 C1250,710 1450,700 1600,650 L1600,900 L0,900 Z" fill="url(#hillLight)"/>
+  <!-- foreground swell -->
+  <path d="M0,860 C400,780 900,790 1600,830 L1600,900 L0,900 Z" fill="#2e7d1d" opacity="0.85"/>
+
+  <!-- subtle sunlight patch on the hill -->
+  <ellipse cx="620" cy="700" rx="330" ry="80" fill="#b8e57a" opacity="0.35" filter="url(#blur18)"/>
+</svg>

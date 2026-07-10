@@ -183,11 +183,10 @@ button {
 .xp-wallpaper {
   position: absolute;
   inset: 0 0 34px 0;
-  background:
-    radial-gradient(ellipse 90% 55% at 70% -10%, rgba(255, 255, 255, 0.55) 0%, transparent 60%),
-    radial-gradient(ellipse 140% 90% at 20% 118%, #3fae2a 0%, #57c433 24%, #7ed03f 38%, transparent 56%),
-    radial-gradient(ellipse 120% 70% at 85% 130%, #2f8f22 0%, #4db32e 30%, transparent 55%),
-    linear-gradient(180deg, #2464d4 0%, #3f7fe0 30%, #7db2ec 55%, #b9d9f2 68%, #cfe7f5 74%, #8ac06c 82%, #57a83f 100%);
+  background-color: #3f7fdd;
+  background-image: url("/bliss.svg");
+  background-size: cover;
+  background-position: center bottom;
 }
 
 .xp-icons {
@@ -470,6 +469,148 @@ button {
 .xp-recycle-note {
   color: #777;
   font-style: italic;
+}
+
+/* ============ Minesweeper ============ */
+.ms {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #7b7b7b #7b7b7b #fff;
+  flex: 1;
+}
+.ms-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 5px 8px;
+  border: 2px solid;
+  border-color: #7b7b7b #fff #fff #7b7b7b;
+}
+.ms-lcd {
+  font-family: "Consolas", monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: #f00;
+  background: #000;
+  padding: 1px 5px;
+  letter-spacing: 2px;
+  border: 1px solid #7b7b7b;
+}
+.ms-face {
+  font-size: 20px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  line-height: 1;
+}
+.ms-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 30px);
+  grid-auto-rows: 30px;
+  border: 3px solid;
+  border-color: #7b7b7b #fff #fff #7b7b7b;
+}
+.ms-cell {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 700;
+  background: #c0c0c0;
+  border: 3px solid;
+  border-color: #fff #7b7b7b #7b7b7b #fff;
+  min-width: 0;
+  min-height: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+.ms-cell.ms-open {
+  border: 1px solid #9a9a9a;
+  background: #cdcdcd;
+}
+.ms-cell.ms-boom {
+  background: #e33;
+}
+.ms-hint {
+  font-size: 11px;
+  color: #444;
+}
+
+/* ============ Notepad ============ */
+.xp-notepad {
+  display: flex;
+  flex: 1;
+}
+.xp-notepad textarea {
+  flex: 1;
+  width: 100%;
+  resize: none;
+  border: 1px solid #7a96df;
+  background: #fff;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  padding: 10px 12px;
+  outline: none;
+  white-space: pre;
+}
+
+/* ============ Paint ============ */
+.paint {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+.paint-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.paint-colors {
+  display: flex;
+  gap: 4px;
+}
+.paint-swatch {
+  width: 22px;
+  height: 22px;
+  min-width: 0;
+  padding: 0;
+  border: 2px solid #9a9a9a;
+  border-radius: 0;
+  box-shadow: none;
+}
+.paint-swatch-active {
+  outline: 2px solid #1d3fbf;
+  outline-offset: 1px;
+}
+.paint-size {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+}
+.paint-canvas {
+  flex: 1;
+  width: 100%;
+  border: 1px solid #7a96df;
+  background: #fff;
+  cursor: crosshair;
+  touch-action: none;
+}
+.paint-hint {
+  font-size: 11px;
+  color: #666;
+  margin: 0;
 }
 
 /* ============ Clippy ============ */
