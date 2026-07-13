@@ -4,8 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Window from "./Window";
 import SoundToggle from "./SoundToggle";
-import { buildRegistry, DESKTOP_ICONS } from "./contents";
-import { buildCompanyRegistry, COMPANY_ICONS } from "./company-contents";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { buildRegistry, getDesktopIcons } from "./contents";
+import { buildCompanyRegistry, getCompanyIcons } from "./company-contents";
 import { ArrowIcon, GuideMark, MenuMark, PowerIcon, ShellIcon } from "./ShellIcons";
 import {
   playClose,
@@ -18,22 +19,7 @@ import {
   playSelect,
 } from "../lib/sounds";
 
-const PERSONAL_TIPS = [
-  "Hej! Jag är Formvän. Öppna My Projects för att se vad Azzam har byggt.",
-  "Öppna Fråga FRAMFORM för hjälp att formulera ett projekt.",
-  "Du kan flytta fönstren och ordna arbetsytan precis som du vill.",
-  "Nyfiken på ett samarbete? My CV och Contact Me hjälper dig vidare.",
-];
-
-const COMPANY_TIPS = [
-  "Hej! Börja med Om FRAMFORM för en snabb överblick av studion.",
-  "Öppna Flödeslabbet för att prova en lokal simulering utan att skicka data.",
-  "Utvalda arbeten visar skillnaden mellan kundprojekt, egna projekt och koncept.",
-  "Formpussel 15 blandar klassisk spelkänsla med FRAMFORMs nya arbetsyta.",
-  "När du är redo öppnar Starta projekt ett riktigt underlag på framform.se.",
-];
-
-function Clock() {
+function Clock({ intl }) {
   const [now, setNow] = useState(null);
 
   useEffect(() => {
@@ -49,18 +35,19 @@ function Clock() {
     <time
       className="xp-clock"
       dateTime={now.toISOString()}
-      aria-label={now.toLocaleString("sv-SE", { dateStyle: "long", timeStyle: "short" })}
+      aria-label={now.toLocaleString(intl, { dateStyle: "long", timeStyle: "short" })}
+      dir="ltr"
     >
-      {now.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })}
+      {now.toLocaleTimeString(intl, { hour: "2-digit", minute: "2-digit" })}
     </time>
   );
 }
 
-export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown }) {
+export default function Desktop({ locale, dictionary, localeDetails, workspaceId = "personal", onLogOff, onShutDown }) {
   const isCompany = workspaceId === "company";
-  const desktopIcons = isCompany ? COMPANY_ICONS : DESKTOP_ICONS;
-  const registryBuilder = isCompany ? buildCompanyRegistry : buildRegistry;
-  const studioTips = isCompany ? COMPANY_TIPS : PERSONAL_TIPS;
+  const copy = dictionary.desktop;
+  const desktopIcons = isCompany ? getCompanyIcons(dictionary) : getDesktopIcons(dictionary);
+  const studioTips = isCompany ? copy.companyTips : copy.personalTips;
   const [wins, setWins] = useState([]);
   const [startOpen, setStartOpen] = useState(false);
   const [guideTip, setGuideTip] = useState(0);
@@ -98,7 +85,9 @@ export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown
             : windowItem
         ));
       }
-      const registry = registryBuilder(openWindow);
+      const registry = isCompany
+        ? buildCompanyRegistry(dictionary, locale)
+        : buildRegistry(openWindow, dictionary, locale);
       const definition = registry[id];
       if (!definition) return prev;
       spawnRef.current += 1;
@@ -121,7 +110,7 @@ export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown
       ];
     });
     window.setTimeout(() => document.querySelector(`[data-window-id="${id}"]`)?.focus(), 0);
-  }, [registryBuilder]);
+  }, [dictionary, isCompany, locale]);
 
   const closeWindow = (id) => {
     const focusTarget = focusTargetsRef.current.get(id);
@@ -208,6 +197,7 @@ export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown
   return (
     <main
       className={`xp-desktop${isCompany ? " company-workspace" : ""}`}
+      data-locale={locale}
       onClick={() => {
         if (!startOpen) return;
         playMenuClose();
@@ -228,23 +218,23 @@ export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown
           />
           <span>
             <strong>FRAMFORM</strong>
-            <small>{isCompany ? "Studio workspace" : "Creative workspace"}</small>
+            <small>{isCompany ? copy.brand.companyWorkspace : copy.brand.personalWorkspace}</small>
           </span>
         </div>
         <div className="studio-wallpaper-message">
-          <span>{isCompany ? "STUDIO · ARBETE · FLÖDEN" : "WEBB · SYSTEM · AUTOMATION"}</span>
-          <strong>{isCompany ? <>Webb, system och flöden.<br />Formade runt verkligt arbete.</> : <>Form för idéer.<br />System för verkligheten.</>}</strong>
+          <span>{isCompany ? copy.brand.companyKicker : copy.brand.personalKicker}</span>
+          <strong>{(isCompany ? copy.brand.companyHeadline : copy.brand.personalHeadline).map((line, index) => <span key={line}>{line}{index === 0 && <br />}</span>)}</strong>
         </div>
       </div>
 
       {isCompany && (
-        <aside className="company-founder-card" aria-label="Azzam Khalaf, VD och grundare">
+        <aside className="company-founder-card" aria-label={copy.founder.aria}>
           <Image src="/azzam-khalaf.webp" alt="Azzam Khalaf" width={320} height={400} sizes="64px" />
-          <span><small>FRAMFORM LEDS AV</small><strong>Azzam Khalaf</strong><em>VD &amp; grundare</em></span>
+          <span><small>{copy.founder.eyebrow}</small><strong><bdi dir="ltr">Azzam Khalaf</bdi></strong><em>{copy.founder.role}</em></span>
         </aside>
       )}
 
-      <nav className="xp-icons" aria-label="Skrivbordsgenvägar">
+      <nav className="xp-icons" aria-label={copy.shortcuts}>
         {desktopIcons.map(({ id, label }) => (
           <button
             key={id}
@@ -252,7 +242,7 @@ export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown
             type="button"
             className="xp-desktop-icon"
             onClick={(event) => openWindow(id, event.currentTarget)}
-            aria-label={`Öppna ${label}`}
+            aria-label={`${copy.openApp} ${label}`}
           >
             <span className="xp-desktop-icon__art"><ShellIcon id={id} /></span>
             <span>{label}</span>
@@ -271,28 +261,29 @@ export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown
           onMinimize={minimizeWindow}
           onMaximize={maximizeWindow}
           onMove={moveWindow}
+          controls={copy.windows}
         />
       ))}
 
       <aside
         className={`studio-guide ${guideOpen ? "studio-guide--open" : ""} ${wins.some((windowItem) => !windowItem.minimized) ? "studio-guide--window-open" : ""}`}
-        aria-label="Formvän, guide"
+        aria-label={copy.guide.aria}
       >
         {guideOpen && (
           <div className="studio-guide__bubble">
             <p aria-live="polite">{studioTips[guideTip]}</p>
             <div className="studio-guide__actions">
               <button type="button" onClick={() => { playSelect(); setGuideTip((guideTip + 1) % studioTips.length); }}>
-                Nästa tips <ArrowIcon />
+                {copy.guide.next} <ArrowIcon />
               </button>
-              <button type="button" onClick={() => { playMenuClose(); setGuideOpen(false); }}>Dölj</button>
+              <button type="button" onClick={() => { playMenuClose(); setGuideOpen(false); }}>{copy.guide.hide}</button>
             </div>
           </div>
         )}
         <button
           type="button"
           className="studio-guide__avatar"
-          aria-label={guideOpen ? "Stäng Formvän" : "Öppna Formvän"}
+          aria-label={guideOpen ? copy.guide.close : copy.guide.open}
           aria-expanded={guideOpen}
           onClick={(event) => {
             event.stopPropagation();
@@ -301,8 +292,10 @@ export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown
             setStartOpen(false);
           }}
         >
-          <GuideMark />
-          <span aria-hidden="true" />
+          <span className="studio-guide__avatar-art" aria-hidden="true">
+            <GuideMark />
+            <span />
+          </span>
         </button>
       </aside>
 
@@ -312,20 +305,20 @@ export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown
           id="studio-launcher"
           className="xp-startmenu"
           role="dialog"
-          aria-label="FRAMFORM-meny"
+          aria-label={copy.launcher.aria}
           onClick={(event) => event.stopPropagation()}
         >
           <header className="xp-startmenu-head">
             <img src={isCompany ? "/framform-symbol.webp" : "/azzam-khalaf.webp"} alt="" />
             <div>
               <strong>{isCompany ? "FRAMFORM" : "Azzam Khalaf"}</strong>
-              <span>{isCompany ? "Webb · system · automation" : "Grundare & Creative Lead"}</span>
+              <span>{isCompany ? copy.launcher.companyTagline : copy.launcher.personalTagline}</span>
             </div>
             <img className="xp-startmenu-brand" src="/framform-symbol.webp" alt="" />
           </header>
 
           <div className="xp-startmenu-body">
-            <p className="xp-startmenu-label">Arbetsyta</p>
+            <p className="xp-startmenu-label">{copy.launcher.workspace}</p>
             <div className="xp-startmenu-grid">
               {(isCompany ? desktopIcons : desktopIcons.slice(0, 8)).map(({ id, label }) => (
                 <button key={id} type="button" onClick={() => openFromLauncher(id)}>
@@ -344,19 +337,19 @@ export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown
               onClick={playSelect}
             >
               <ShellIcon id={isCompany ? "company-about" : "projects"} />
-              <span>{isCompany ? "Öppna framform.se" : "Portfolio hub"}</span>
+              <span>{isCompany ? copy.launcher.companyWebsite : copy.launcher.portfolioHub}</span>
               <ArrowIcon />
             </a>
           </div>
 
           <footer className="xp-startmenu-footer">
-            <button type="button" onClick={() => { playSelect(); onLogOff(); }}>Tillbaka till valet</button>
-            <button type="button" onClick={() => { playPower(); onShutDown(); }}><PowerIcon /> Avsluta presentationen</button>
+            <button type="button" onClick={() => { playSelect(); onLogOff(); }}>{copy.launcher.back}</button>
+            <button type="button" onClick={() => { playPower(); onShutDown(); }}><PowerIcon /> {copy.launcher.power}</button>
           </footer>
         </section>
       )}
 
-      <footer className="xp-taskbar" aria-label="Aktiva fönster">
+      <footer className="xp-taskbar" aria-label={copy.taskbar.aria}>
         <button
           ref={startButtonRef}
           type="button"
@@ -372,7 +365,7 @@ export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown
           }}
         >
           <MenuMark />
-          <span>Meny</span>
+          <span>{copy.taskbar.menu}</span>
         </button>
 
         <div className="xp-tasks">
@@ -386,7 +379,7 @@ export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown
                 data-task-id={windowItem.id}
                 onClick={() => taskbarClick(windowItem.id)}
                 aria-pressed={isActive}
-                aria-label={`${windowItem.title}${windowItem.minimized ? ", minimerat" : isActive ? ", aktivt" : ""}`}
+                aria-label={`${windowItem.title}${windowItem.minimized ? `, ${copy.taskbar.minimized}` : isActive ? `, ${copy.taskbar.active}` : ""}`}
               >
                 <ShellIcon id={windowItem.id} />
                 <span className="xp-task-label">{windowItem.title}</span>
@@ -396,9 +389,10 @@ export default function Desktop({ workspaceId = "personal", onLogOff, onShutDown
         </div>
 
         <div className="xp-tray">
-          <SoundToggle compact />
+          <LanguageSwitcher compact locale={locale} currentView={workspaceId} copy={dictionary.language} />
+          <SoundToggle compact copy={dictionary.sound} />
           <span className="xp-tray-brand">FRAMFORM</span>
-          <Clock />
+          <Clock intl={localeDetails.intl} />
         </div>
       </footer>
     </main>

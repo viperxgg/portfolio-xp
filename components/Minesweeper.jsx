@@ -34,7 +34,7 @@ function buildBoard(safeIndex = -1) {
   return cells;
 }
 
-export default function Minesweeper() {
+export default function Minesweeper({ copy }) {
   const [board, setBoard] = useState(buildBoard);
   const [state, setState] = useState("play"); // play | dead | won
   const [mode, setMode] = useState("reveal"); // reveal | flag
@@ -136,14 +136,14 @@ export default function Minesweeper() {
     <div className="ms">
       <div className="ms-top">
         <span className="ms-lcd">{String(MINES - flags).padStart(3, "0")}</span>
-        <button type="button" className="ms-face" onClick={reset} aria-label="Nytt spel">{face}</button>
+        <button type="button" className="ms-face" onClick={reset} aria-label={copy.newGame}>{face}</button>
         <span className="ms-lcd">{String(ticks).padStart(3, "0")}</span>
       </div>
-      <div className="ms-modes" aria-label="Spelläge">
-        <button type="button" aria-pressed={mode === "reveal"} onClick={() => setMode("reveal")}>Öppna</button>
-        <button type="button" aria-pressed={mode === "flag"} onClick={() => setMode("flag")}>Flagga</button>
+      <div className="ms-modes" aria-label={copy.mode}>
+        <button type="button" aria-pressed={mode === "reveal"} onClick={() => setMode("reveal")}>{copy.reveal}</button>
+        <button type="button" aria-pressed={mode === "flag"} onClick={() => setMode("flag")}>{copy.flag}</button>
       </div>
-      <div className="ms-grid" aria-label="Minfält med 81 rutor" onContextMenu={(e) => e.preventDefault()}>
+      <div className="ms-grid" aria-label={copy.field} dir="ltr" onContextMenu={(e) => e.preventDefault()}>
         {board.map((cell, i) => (
           <button
             key={i}
@@ -162,13 +162,14 @@ export default function Minesweeper() {
             aria-label={
               cell.open
                 ? cell.mine
-                  ? "Mina"
+                  ? copy.mine
                   : cell.n > 0
-                    ? `${cell.n} minor i närheten`
-                    : "Tom ruta"
+                    ? (cell.n === 1 ? copy.nearby.one : cell.n === 2 ? copy.nearby.two : copy.nearby.many)
+                      .replace("{count}", String(cell.n))
+                    : copy.empty
                 : cell.flag
-                  ? "Flaggad ruta"
-                  : `Täckt ruta ${i + 1}`
+                  ? copy.flagged
+                  : `${copy.covered} ${i + 1}`
             }
             aria-pressed={cell.open ? undefined : cell.flag}
             disabled={state !== "play" && !cell.open}
@@ -187,10 +188,10 @@ export default function Minesweeper() {
       </div>
       <p className="ms-hint">
         {state === "won"
-          ? "Du vann! 🎉"
+          ? copy.won
           : state === "dead"
-            ? "Pang! Klicka på ansiktet för att försöka igen."
-            : "Välj Öppna eller Flagga · Tangentbord: F sätter en flagga"}
+            ? copy.lost
+            : copy.hint}
       </p>
     </div>
   );

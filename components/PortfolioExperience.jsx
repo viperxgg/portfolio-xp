@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Desktop from "../components/Desktop";
-import SoundToggle from "../components/SoundToggle";
+import Desktop from "./Desktop";
+import LanguageSwitcher from "./LanguageSwitcher";
+import SoundToggle from "./SoundToggle";
+import { LOCALE_DETAILS } from "../lib/i18n/config";
 import { playPower, playStartup } from "../lib/sounds";
 
 function ArrowIcon() {
@@ -22,7 +24,9 @@ function PowerIcon() {
   );
 }
 
-function LoginScreen({ onLogin, onCompany, onPowerOff }) {
+function LoginScreen({ locale, dictionary, onLogin, onCompany, onPowerOff }) {
+  const copy = dictionary.entry;
+
   return (
     <div className="studio-entry">
       <div className="studio-entry__ambient" aria-hidden="true">
@@ -39,31 +43,31 @@ function LoginScreen({ onLogin, onCompany, onPowerOff }) {
           <img src="/framform-symbol.webp" alt="" />
           <div>
             <strong>FRAMFORM</strong>
-            <span>Digitala lösningar, formade runt verkligt arbete.</span>
+            <span>{copy.brandTagline}</span>
           </div>
         </div>
-        <p>PORTFOLIO &amp; STUDIO</p>
+        <p>{copy.headerLabel}</p>
       </header>
 
       <main className="studio-entry__main">
         <div className="studio-entry__intro">
-          <p>VÄLJ DIN INGÅNG</p>
-          <h1>En portfolio. Två perspektiv.</h1>
+          <p>{copy.eyebrow}</p>
+          <h1>{copy.title}</h1>
         </div>
 
-        <div className="studio-entry__choices" aria-label="Välj portfolio eller studio">
+        <div className="studio-entry__choices" aria-label={copy.choicesLabel}>
           <button className="studio-choice studio-choice--azzam" type="button" onClick={onLogin}>
             <span className="studio-choice__media">
               <img src="/azzam-khalaf.webp" alt="Azzam Khalaf" />
-              <span className="studio-choice__availability">ÖPPEN</span>
+              <span className="studio-choice__availability">{copy.open}</span>
             </span>
             <span className="studio-choice__content">
-              <span className="studio-choice__number">01 / PERSONLIG PORTFOLIO</span>
+              <span className="studio-choice__number">{copy.personal.number}</span>
               <strong>Azzam Khalaf</strong>
-              <span className="studio-choice__role">Grundare &amp; Creative Lead</span>
-              <span className="studio-choice__description">Projekt, erfarenhet och arbetssätt.</span>
+              <span className="studio-choice__role">{copy.personal.role}</span>
+              <span className="studio-choice__description">{copy.personal.description}</span>
               <span className="studio-choice__action">
-                Öppna Azzams portfolio <ArrowIcon />
+                {copy.personal.action} <ArrowIcon />
               </span>
             </span>
           </button>
@@ -78,14 +82,14 @@ function LoginScreen({ onLogin, onCompany, onPowerOff }) {
                 sizes="(max-width: 600px) 112px, (max-width: 900px) 150px, 210px"
                 priority
               />
-              <span className="studio-choice__availability">ÖPPEN</span>
+              <span className="studio-choice__availability">{copy.open}</span>
             </span>
             <span className="studio-choice__content">
-              <span className="studio-choice__number">02 / DIGITAL STUDIO</span>
+              <span className="studio-choice__number">{copy.company.number}</span>
               <strong>FRAMFORM</strong>
-              <span className="studio-choice__role">Digital produktion &amp; automation</span>
-              <span className="studio-choice__description">Webb, digitala flöden och ansvarsfull AI.</span>
-              <span className="studio-choice__action">Öppna FRAMFORMs arbetsyta <ArrowIcon /></span>
+              <span className="studio-choice__role">{copy.company.role}</span>
+              <span className="studio-choice__description">{copy.company.description}</span>
+              <span className="studio-choice__action">{copy.company.action} <ArrowIcon /></span>
             </span>
           </button>
         </div>
@@ -95,34 +99,42 @@ function LoginScreen({ onLogin, onCompany, onPowerOff }) {
         <div className="studio-entry__footer-actions">
           <button type="button" className="studio-entry__power" onClick={onPowerOff}>
             <PowerIcon />
-            <span>Avsluta presentationen</span>
+            <span>{copy.power}</span>
           </button>
-          <SoundToggle />
+          <SoundToggle locale={locale} dictionary={dictionary} copy={dictionary.sound} />
         </div>
-        <p>FRAMFORM · Sverige · Webb · System · Automation</p>
+        <p>{copy.footer}</p>
       </footer>
     </div>
   );
 }
 
-function ShutdownScreen({ onRestart }) {
+function ShutdownScreen({ dictionary, onRestart }) {
+  const copy = dictionary.entry;
+
   return (
     <div className="studio-shutdown">
       <img src="/framform-symbol.webp" alt="" />
       <p className="studio-shutdown__eyebrow">FRAMFORM</p>
-      <h1>Presentationen är avslutad.</h1>
-      <p>Tack för att du tittade in.</p>
-      <button type="button" onClick={() => { playStartup(); onRestart(); }}>Starta igen <ArrowIcon /></button>
+      <h1>{copy.shutdownTitle}</h1>
+      <p>{copy.shutdownText}</p>
+      <button type="button" onClick={() => { playStartup(); onRestart(); }}>
+        {copy.restart} <ArrowIcon />
+      </button>
     </div>
   );
 }
 
-export default function Home() {
-  const [phase, setPhase] = useState("login");
+export default function PortfolioExperience({ locale, dictionary, initialPhase = "login" }) {
+  const [phase, setPhase] = useState(initialPhase);
+
+  let experience = null;
 
   if (phase === "login") {
-    return (
+    experience = (
       <LoginScreen
+        locale={locale}
+        dictionary={dictionary}
         onLogin={() => {
           playStartup();
           setPhase("personal");
@@ -137,18 +149,28 @@ export default function Home() {
         }}
       />
     );
+  } else if (phase === "off") {
+    experience = <ShutdownScreen dictionary={dictionary} onRestart={() => setPhase("login")} />;
+  } else if (phase === "personal" || phase === "company") {
+    experience = (
+      <Desktop
+        key={phase}
+        workspaceId={phase}
+        locale={locale}
+        dictionary={dictionary}
+        localeDetails={LOCALE_DETAILS[locale]}
+        onLogOff={() => setPhase("login")}
+        onShutDown={() => setPhase("off")}
+      />
+    );
   }
 
-  if (phase === "off") return <ShutdownScreen onRestart={() => setPhase("login")} />;
-
-  if (phase !== "personal" && phase !== "company") return null;
-
   return (
-    <Desktop
-      key={phase}
-      workspaceId={phase}
-      onLogOff={() => setPhase("login")}
-      onShutDown={() => setPhase("off")}
-    />
+    <>
+      {(phase === "login" || phase === "off") && (
+        <LanguageSwitcher locale={locale} dictionary={dictionary} view={phase} />
+      )}
+      {experience}
+    </>
   );
 }

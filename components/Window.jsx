@@ -3,7 +3,7 @@
 import { useCallback, useRef } from "react";
 import { ShellIcon } from "./ShellIcons";
 
-export default function Window({ win, focused, onFocus, onClose, onMinimize, onMaximize, onMove, isMobile }) {
+export default function Window({ win, focused, onFocus, onClose, onMinimize, onMaximize, onMove, isMobile, controls }) {
   const dragState = useRef(null);
 
   const onTitlePointerDown = useCallback(
@@ -63,9 +63,9 @@ export default function Window({ win, focused, onFocus, onClose, onMinimize, onM
           <span className="xp-title-icon"><ShellIcon id={win.id.replace(/^project-.+$/, "projects")} /></span> {win.title}
         </div>
         <div className="title-bar-controls">
-          <button aria-label="Minimera" onClick={() => onMinimize(win.id)} />
-          <button aria-label="Maximera" disabled={isMobile} onClick={() => onMaximize(win.id)} />
-          <button aria-label="Stäng" onClick={() => onClose(win.id)} />
+          <button aria-label={controls.minimize} onClick={() => onMinimize(win.id)} />
+          <button aria-label={controls.maximize} disabled={isMobile} onClick={() => onMaximize(win.id)} />
+          <button aria-label={controls.close} onClick={() => onClose(win.id)} />
         </div>
       </div>
       <div className="window-body xp-window-body">{win.content}</div>

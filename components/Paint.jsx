@@ -5,7 +5,7 @@ import { playClick } from "../lib/sounds";
 
 const COLORS = ["#000000", "#c62828", "#f4b800", "#2e7d32", "#1d3fbf", "#8e24aa", "#ff7b3d", "#ffffff"];
 
-export default function Paint() {
+export default function Paint({ copy }) {
   const canvasRef = useRef(null);
   const drawing = useRef(false);
   const last = useRef(null);
@@ -72,27 +72,30 @@ export default function Paint() {
               className={`paint-swatch ${color === c ? "paint-swatch-active" : ""}`}
               style={{ background: c }}
               onClick={() => { setColor(c); playClick(); }}
-              aria-label={`Color ${c}`}
+              aria-label={`${copy.color} ${c}`}
+              type="button"
             />
           ))}
         </div>
         <label className="paint-size">
-          Size
+          {copy.size}
           <input type="range" min="1" max="14" value={size} onChange={(e) => setSize(Number(e.target.value))} />
         </label>
-        <button onClick={clear}>Clear</button>
+        <button type="button" onClick={clear}>{copy.clear}</button>
       </div>
       <canvas
         ref={canvasRef}
         width={620}
         height={380}
         className="paint-canvas"
+        aria-label={copy.canvas}
+        role="img"
         onPointerDown={down}
         onPointerMove={move}
         onPointerUp={up}
         onPointerLeave={up}
       />
-      <p className="paint-hint">Draw something! (Nothing is saved — just like the good old days.)</p>
+      <p className="paint-hint">{copy.hint}</p>
     </div>
   );
 }

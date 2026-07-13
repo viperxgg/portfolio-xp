@@ -12,7 +12,7 @@ function SpeakerIcon({ muted }) {
   );
 }
 
-export default function SoundToggle({ compact = false }) {
+export default function SoundToggle({ compact = false, copy }) {
   const [soundOn, setSoundOn] = useState(true);
 
   useEffect(() => {
@@ -32,12 +32,12 @@ export default function SoundToggle({ compact = false }) {
     <button
       type="button"
       className={`system-sound-toggle${compact ? " system-sound-toggle--compact" : ""}`}
-      aria-label={soundOn ? "Stäng av systemljud" : "Slå på systemljud"}
+      aria-label={soundOn ? copy.turnOff : copy.turnOn}
       aria-pressed={soundOn}
       onClick={toggle}
     >
       <SpeakerIcon muted={!soundOn} />
-      {!compact && <span>{soundOn ? "Systemljud på" : "Systemljud av"}</span>}
+      {!compact && <span>{soundOn ? copy.on : copy.off}</span>}
     </button>
   );
 }

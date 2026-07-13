@@ -38,7 +38,7 @@ function formatTime(seconds) {
   return `${String(minutes).padStart(2, "0")}:${String(rest).padStart(2, "0")}`;
 }
 
-export default function RetroPuzzle() {
+export default function RetroPuzzle({ copy }) {
   const [tiles, setTiles] = useState(shuffledBoard);
   const [moves, setMoves] = useState(0);
   const [seconds, setSeconds] = useState(0);
@@ -119,24 +119,24 @@ export default function RetroPuzzle() {
     <section className="retro-puzzle" aria-labelledby="retro-puzzle-title">
       <header className="retro-puzzle__header">
         <div>
-          <p>FORMPUZZEL 15 · RETRO / FUTURE</p>
-          <h2 id="retro-puzzle-title">Ordna formen. Hitta rytmen.</h2>
-          <span>Flytta brickorna tills siffrorna ligger 1–15. Tryck eller använd Tab + Enter.</span>
+          <p>{copy.kicker}</p>
+          <h2 id="retro-puzzle-title">{copy.title}</h2>
+          <span>{copy.instructions}</span>
         </div>
-        <div className="retro-puzzle__score" aria-label="Spelstatus">
-          <span><small>DRAG</small><strong>{String(moves).padStart(3, "0")}</strong></span>
-          <span><small>TID</small><strong>{formatTime(seconds)}</strong></span>
+        <div className="retro-puzzle__score" aria-label={copy.statusLabel} dir="ltr">
+          <span><small>{copy.moves}</small><strong>{String(moves).padStart(3, "0")}</strong></span>
+          <span><small>{copy.time}</small><strong>{formatTime(seconds)}</strong></span>
         </div>
       </header>
 
       <div className="retro-puzzle__layout">
-        <div className={`retro-puzzle__board${won ? " is-complete" : ""}`} aria-label="Femtonspussel med femton brickor">
+        <div className={`retro-puzzle__board${won ? " is-complete" : ""}`} aria-label={copy.boardLabel} dir="ltr">
           {tiles.map((tile, index) => {
             if (tile === null) return <span className="retro-puzzle__empty" aria-hidden="true" key="empty" />;
             const movable = neighbours(emptyIndex).includes(index);
             return (
               <button
-                aria-label={movable ? `Flytta bricka ${tile}` : `Bricka ${tile}, kan inte flyttas`}
+                aria-label={movable ? `${copy.moveTile} ${tile}` : `${copy.moveTile} ${tile}, ${copy.blockedTile}`}
                 className={movable ? "is-movable" : ""}
                 key={tile}
                 onClick={() => moveTile(index)}
@@ -151,14 +151,14 @@ export default function RetroPuzzle() {
         <aside className="retro-puzzle__controls">
           <div className="retro-puzzle__signal" role="status" aria-live="polite">
             <span aria-hidden="true" />
-            <strong>{won ? "Pusslet är klart!" : started ? "Spelet pågår" : "Redo när du är"}</strong>
-            <p>{won ? `${moves} drag på ${formatTime(seconds)}.` : "Den tomma rutan visar vart en bricka kan flyttas."}</p>
+            <strong>{won ? copy.complete : started ? copy.playing : copy.ready}</strong>
+            <p>{won ? `${moves} ${copy.completeSummary} ${formatTime(seconds)}.` : copy.emptyHint}</p>
           </div>
-          <button type="button" onClick={reset}>Ny omgång</button>
+          <button type="button" onClick={reset}>{copy.newRound}</button>
           <button type="button" className="is-secondary" aria-pressed={!muted} onClick={() => setMuted((value) => !value)}>
-            {muted ? "Slå på ljud" : "Ljud på"}
+            {muted ? copy.turnSoundOn : copy.soundOn}
           </button>
-          <small>Ljud: Kenney UI Audio · CC0</small>
+          <small>{copy.credit}</small>
         </aside>
       </div>
     </section>
