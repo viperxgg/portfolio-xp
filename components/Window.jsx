@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef } from "react";
+import { ShellIcon } from "./ShellIcons";
 
 export default function Window({ win, focused, onFocus, onClose, onMinimize, onMaximize, onMove, isMobile }) {
   const dragState = useRef(null);
@@ -34,9 +35,9 @@ export default function Window({ win, focused, onFocus, onClose, onMinimize, onM
   );
 
   const style = isMobile
-    ? { left: 4, right: 4, top: 8, bottom: 44, position: "fixed", zIndex: win.z }
+    ? { left: 8, right: 8, top: 8, bottom: 78, position: "fixed", zIndex: win.z }
     : win.maximized
-      ? { left: 0, top: 0, width: "100vw", height: "calc(100vh - 34px)", position: "fixed", zIndex: win.z }
+      ? { left: 0, top: 0, width: "100vw", height: "calc(100vh - 78px)", position: "fixed", zIndex: win.z }
       : {
           left: win.pos.x,
           top: win.pos.y,
@@ -51,15 +52,20 @@ export default function Window({ win, focused, onFocus, onClose, onMinimize, onM
       className={`window xp-window ${focused ? "" : "xp-window-blurred"}`}
       style={{ ...style, display: win.minimized ? "none" : "flex" }}
       onPointerDown={() => onFocus(win.id)}
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby={`window-title-${win.id}`}
+      data-window-id={win.id}
+      tabIndex={-1}
     >
       <div className="title-bar" onPointerDown={onTitlePointerDown} onDoubleClick={() => !isMobile && onMaximize(win.id)}>
-        <div className="title-bar-text">
-          <span className="xp-title-icon">{win.icon}</span> {win.title}
+        <div className="title-bar-text" id={`window-title-${win.id}`}>
+          <span className="xp-title-icon"><ShellIcon id={win.id.replace(/^project-.+$/, "projects")} /></span> {win.title}
         </div>
         <div className="title-bar-controls">
-          <button aria-label="Minimize" onClick={() => onMinimize(win.id)} />
-          <button aria-label="Maximize" onClick={() => onMaximize(win.id)} />
-          <button aria-label="Close" onClick={() => onClose(win.id)} />
+          <button aria-label="Minimera" onClick={() => onMinimize(win.id)} />
+          <button aria-label="Maximera" disabled={isMobile} onClick={() => onMaximize(win.id)} />
+          <button aria-label="Stäng" onClick={() => onClose(win.id)} />
         </div>
       </div>
       <div className="window-body xp-window-body">{win.content}</div>

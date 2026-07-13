@@ -8,12 +8,12 @@ const COLS = 9;
 const MINES = 10;
 const NUM_COLORS = ["", "#1d3fbf", "#2e7d32", "#c62828", "#1a237e", "#6d2c26", "#00838f", "#212121", "#757575"];
 
-function buildBoard() {
+function buildBoard(safeIndex = -1) {
   const cells = Array.from({ length: ROWS * COLS }, () => ({ mine: false, open: false, flag: false, n: 0 }));
   let placed = 0;
   while (placed < MINES) {
     const i = Math.floor(Math.random() * cells.length);
-    if (!cells[i].mine) {
+    if (i !== safeIndex && !cells[i].mine) {
       cells[i].mine = true;
       placed++;
     }
@@ -37,9 +37,11 @@ function buildBoard() {
 export default function Minesweeper() {
   const [board, setBoard] = useState(buildBoard);
   const [state, setState] = useState("play"); // play | dead | won
+  const [mode, setMode] = useState("reveal"); // reveal | flag
   const [ticks, setTicks] = useState(0);
   const timer = useRef(null);
   const started = useRef(false);
+  const hasRevealed = useRef(false);
 
   useEffect(() => {
     if (state !== "play" && timer.current) {
@@ -62,17 +64,25 @@ export default function Minesweeper() {
     if (timer.current) clearInterval(timer.current);
     timer.current = null;
     started.current = false;
+    hasRevealed.current = false;
     setTicks(0);
     setBoard(buildBoard());
     setState("play");
+    setMode("reveal");
     playClick();
   };
 
   const reveal = (i) => {
     if (state !== "play") return;
+    const firstReveal = !hasRevealed.current;
+    hasRevealed.current = true;
     startTimer();
     setBoard((prev) => {
-      const b = prev.map((c) => ({ ...c }));
+      const source = firstReveal ? buildBoard(i) : prev;
+      const b = source.map((c, index) => ({
+        ...c,
+        flag: firstReveal ? prev[index].flag && index !== i : c.flag,
+      }));
       if (b[i].flag || b[i].open) return b;
       if (b[i].mine) {
         b.forEach((c) => c.mine && (c.open = true));
@@ -107,13 +117,15 @@ export default function Minesweeper() {
     });
   };
 
-  const toggleFlag = (e, i) => {
-    e.preventDefault();
+  const toggleFlag = (i) => {
     if (state !== "play") return;
     startTimer();
     setBoard((prev) => {
       const b = prev.map((c) => ({ ...c }));
-      if (!b[i].open) b[i].flag = !b[i].flag;
+      if (!b[i].open) {
+        const canAddFlag = b.filter((cell) => cell.flag).length < MINES;
+        b[i].flag = b[i].flag ? false : canAddFlag;
+      }
       return b;
     });
   };
@@ -124,16 +136,41 @@ export default function Minesweeper() {
     <div className="ms">
       <div className="ms-top">
         <span className="ms-lcd">{String(MINES - flags).padStart(3, "0")}</span>
-        <button className="ms-face" onClick={reset} aria-label="New game">{face}</button>
+        <button type="button" className="ms-face" onClick={reset} aria-label="Nytt spel">{face}</button>
         <span className="ms-lcd">{String(ticks).padStart(3, "0")}</span>
       </div>
-      <div className="ms-grid" onContextMenu={(e) => e.preventDefault()}>
+      <div className="ms-modes" aria-label="Spelläge">
+        <button type="button" aria-pressed={mode === "reveal"} onClick={() => setMode("reveal")}>Öppna</button>
+        <button type="button" aria-pressed={mode === "flag"} onClick={() => setMode("flag")}>Flagga</button>
+      </div>
+      <div className="ms-grid" aria-label="Minfält med 81 rutor" onContextMenu={(e) => e.preventDefault()}>
         {board.map((cell, i) => (
           <button
             key={i}
+            type="button"
             className={`ms-cell ${cell.open ? "ms-open" : ""} ${cell.boom ? "ms-boom" : ""}`}
-            onClick={() => reveal(i)}
-            onContextMenu={(e) => toggleFlag(e, i)}
+            onClick={() => mode === "flag" ? toggleFlag(i) : reveal(i)}
+            onContextMenu={(event) => {
+              event.preventDefault();
+              toggleFlag(i);
+            }}
+            onKeyDown={(event) => {
+              if (event.key.toLowerCase() !== "f") return;
+              event.preventDefault();
+              toggleFlag(i);
+            }}
+            aria-label={
+              cell.open
+                ? cell.mine
+                  ? "Mina"
+                  : cell.n > 0
+                    ? `${cell.n} minor i närheten`
+                    : "Tom ruta"
+                : cell.flag
+                  ? "Flaggad ruta"
+                  : `Täckt ruta ${i + 1}`
+            }
+            aria-pressed={cell.open ? undefined : cell.flag}
             disabled={state !== "play" && !cell.open}
           >
             {cell.open
@@ -149,7 +186,11 @@ export default function Minesweeper() {
         ))}
       </div>
       <p className="ms-hint">
-        {state === "won" ? "You win! 🎉" : state === "dead" ? "Boom! Click the face to retry." : "Left-click: reveal · Right-click: flag"}
+        {state === "won"
+          ? "Du vann! 🎉"
+          : state === "dead"
+            ? "Pang! Klicka på ansiktet för att försöka igen."
+            : "Välj Öppna eller Flagga · Tangentbord: F sätter en flagga"}
       </p>
     </div>
   );

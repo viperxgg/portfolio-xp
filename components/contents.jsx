@@ -1,58 +1,61 @@
 "use client";
 
-import { FolderIcon, ComputerIcon, DocIcon, GlobeIcon, ChatIcon, MailIcon, BinIcon, CVIcon, GameIcon, NotepadIcon, PaintIcon } from "./Icons";
+import { useState } from "react";
 import Minesweeper from "./Minesweeper";
 import Paint from "./Paint";
+import { ShellIcon } from "./ShellIcons";
 
 export const PROJECTS = [
   {
-    id: "smartartai",
-    name: "smartartai.se",
-    desc: "Product guide with 300+ pages, a data-driven rating system and the AI advisor “Fråga Elin” (Claude API: streaming, tool calls, guardrails).",
-    tags: "Next.js · React · Supabase · Claude API · SEO/AEO",
+    id: "elinsval",
+    name: "Elins val",
+    desc: "Svensk produktguide med 300+ publicerade sidor, ett eget poängsystem och rådgivningsgränssnittet Fråga Elin.",
+    tags: "Next.js · React · Supabase · SEO/AEO",
     url: "https://www.smartartai.se",
-    pdf: "https://www.smartartai.se/portfolio/smartartai-se.pdf",
+    caseUrl: "https://framform.se/arbete#elins-val",
     preview: "/previews/smartartai.png",
   },
   {
     id: "rattvis",
     name: "Rättvis Demokrati",
-    desc: "Complete political campaign site — from idea to live on its own domain in under six hours.",
-    tags: "HTML/CSS · GitHub Pages · Design · Content",
+    desc: "Kampanjplattform med visuell identitet, tydlig innehållsstruktur och automatisk kommunbevakning.",
+    tags: "Webbdesign · Innehåll · Automation",
     url: "https://rattvisdemokrati.pro",
-    pdf: "https://www.smartartai.se/portfolio/rattvis-demokrati.pdf",
+    caseUrl: "https://framform.se/arbete#rattvis-demokrati",
+    preview: "https://framform.se/media/work/rattvis-demokrati.webp",
   },
   {
     id: "rsmh",
     name: "RSMH Fjällsjö",
-    desc: "Room booking + food ordering with availability/date logic. Bookings land straight in the organisation's inbox — no accounts, no admin.",
-    tags: "Vercel · Forms → email · Booking logic",
+    desc: "Självservice för rumsbokning och matbeställning, med datumregler och strukturerad överlämning via e-post.",
+    tags: "Webbdesign · Bokningslogik · Automation",
     url: "https://www.rsmhfjallsjo.se",
-    pdf: "https://www.smartartai.se/portfolio/rsmh-fjallsjo.pdf",
+    caseUrl: "https://framform.se/arbete#rsmh-fjallsjo",
+    preview: "https://framform.se/media/work/rsmh-fjallsjo.webp",
   },
   {
     id: "menu",
     name: "Premium Menu",
-    desc: "Digital QR menu for restaurants: guests order from their phone, staff & kitchen see orders in a real-time panel.",
-    tags: "Vite · JavaScript · Supabase realtime",
+    desc: "Fungerande QR-meny där gäst, servering och kök delar samma orderflöde i realtid.",
+    tags: "Produktdesign · Supabase · Realtidsflöde",
     url: "https://premium-menu-8fij.vercel.app",
-    pdf: "https://www.smartartai.se/portfolio/premium-menu.pdf",
+    caseUrl: "https://framform.se/arbete#premium-menu",
+    preview: "https://framform.se/media/work/premium-menu.webp",
   },
 ];
 
 function ProjectsWindow({ openWindow }) {
   return (
     <div className="xp-folder">
-      <p className="xp-folder-hint">4 objects &mdash; double-click a project to open it</p>
+      <p className="xp-folder-hint">4 projekt &mdash; välj ett projekt för att öppna det</p>
       <div className="xp-folder-grid">
         {PROJECTS.map((p) => (
-          <button key={p.id} className="xp-file" onDoubleClick={() => openWindow(`project-${p.id}`)}>
-            <GlobeIcon />
+          <button key={p.id} className="xp-file" onClick={() => openWindow(`project-${p.id}`)}>
+            <ShellIcon id={`project-${p.id}`} />
             <span>{p.name}</span>
           </button>
         ))}
       </div>
-      <p className="xp-folder-hint xp-folder-hint-mobile">On mobile: tap twice.</p>
     </div>
   );
 }
@@ -61,13 +64,13 @@ function ProjectWindow({ project }) {
   return (
     <div className="xp-project">
       <div className="xp-project-bar">
-        <span className="xp-address">Address:</span>
+        <span className="xp-address">Adress:</span>
         <span className="xp-address-box">{project.url}</span>
         <a className="xp-btn-link" href={project.url} target="_blank" rel="noopener noreferrer">
-          <button>Open in new tab</button>
+          <button>Öppna webbplatsen</button>
         </a>
-        <a className="xp-btn-link" href={project.pdf} target="_blank" rel="noopener noreferrer">
-          <button>Case sheet (PDF)</button>
+        <a className="xp-btn-link" href={project.caseUrl} target="_blank" rel="noopener noreferrer">
+          <button>Se hela caset</button>
         </a>
       </div>
       <p className="xp-project-desc">
@@ -75,9 +78,9 @@ function ProjectWindow({ project }) {
       </p>
       {project.preview ? (
         <a className="xp-preview" href={project.url} target="_blank" rel="noopener noreferrer">
-          <img src={project.preview} alt={`${project.name} preview`} />
+          <img src={project.preview} alt={`${project.name} — förhandsvisning`} />
           <span className="xp-preview-btn">
-            <button>Open the live site &rarr;</button>
+            <button>Öppna den publicerade webbplatsen &rarr;</button>
           </span>
         </a>
       ) : (
@@ -90,23 +93,22 @@ function ProjectWindow({ project }) {
 function AboutWindow() {
   return (
     <div className="xp-about">
-      <img src="/avatar.png" alt="Azzam Khalaf" className="xp-about-photo" />
+      <img src="/azzam-khalaf.webp" alt="Azzam Khalaf" className="xp-about-photo" />
       <div>
         <h3>Azzam Khalaf</h3>
-        <p className="xp-about-role">Web developer &amp; digital creator &mdash; Strömsund, Sweden</p>
+        <p className="xp-about-role">Grundare &amp; Creative Lead på FRAMFORM &mdash; Strömsund, Sverige</p>
         <p>
-          I design, build and ship complete web solutions &mdash; from idea to published product. AI and
-          automation are a natural part of how I work: not as a shortcut, but to deliver more, faster,
-          without compromising quality.
+          Jag formar webbplatser, digitala system och automatiserade flöden runt verkliga behov. Arbetet
+          går från analys och struktur till design, utveckling, test och en tydlig överlämning.
         </p>
         <ul>
-          <li><b>Stack:</b> Next.js / React, JavaScript, Supabase (real-time), Claude API, Vercel</li>
-          <li><b>Ships:</b> booking systems, QR ordering, AI advisors, admin dashboards</li>
-          <li><b>Languages:</b> Arabic (native), Swedish, English</li>
+          <li><b>Teknik:</b> Next.js / React, JavaScript, Supabase och Vercel</li>
+          <li><b>Levererar:</b> webbplatser, bokningsflöden, självservice och praktisk automation</li>
+          <li><b>Språk:</b> arabiska, svenska och engelska</li>
         </ul>
         <p>
-          <a href="https://www.smartartai.se/portfolio" target="_blank" rel="noopener noreferrer">
-            www.smartartai.se/portfolio
+          <a href="https://framform.se/studio" target="_blank" rel="noopener noreferrer">
+            Läs mer om FRAMFORM och studion
           </a>
         </p>
       </div>
@@ -114,44 +116,76 @@ function AboutWindow() {
   );
 }
 
+const CV_FILES = {
+  sv: {
+    label: "Svenska",
+    src: "/Azzam-Khalaf-CV-FRAMFORM-SV.pdf",
+    download: "Azzam-Khalaf-CV-FRAMFORM-SV.pdf",
+    title: "Azzam Khalafs CV på svenska",
+    status: "Visar den svenska versionen",
+  },
+  en: {
+    label: "English",
+    src: "/Azzam-Khalaf-CV-FRAMFORM-EN.pdf",
+    download: "Azzam-Khalaf-CV-FRAMFORM-EN.pdf",
+    title: "Azzam Khalaf's CV in English",
+    status: "Showing the English version",
+  },
+};
+
 function CVWindow() {
+  const [language, setLanguage] = useState("sv");
+  const selectedCV = CV_FILES[language];
+
   return (
     <div className="xp-cv">
-      <div className="xp-project-bar">
-        <a className="xp-btn-link" href="/cv.pdf" target="_blank" rel="noopener noreferrer">
-          <button>Open full screen</button>
+      <div className="xp-project-bar xp-cv-bar">
+        <div className="xp-cv-languages" role="group" aria-label="Välj CV-språk">
+          {Object.entries(CV_FILES).map(([code, cv]) => (
+            <button
+              key={code}
+              type="button"
+              aria-pressed={language === code}
+              onClick={() => setLanguage(code)}
+            >
+              {cv.label}
+            </button>
+          ))}
+        </div>
+        <a className="xp-cv-action" href={selectedCV.src} target="_blank" rel="noopener noreferrer">
+          Öppna i ny flik
         </a>
-        <a className="xp-btn-link" href="/cv.pdf" download="Azzam-Khalaf-CV.pdf">
-          <button>Download</button>
+        <a className="xp-cv-action" href={selectedCV.src} download={selectedCV.download}>
+          Ladda ner
         </a>
       </div>
-      <iframe src="/cv.pdf" title="CV" className="xp-iframe" />
+      <p className="xp-cv-status" aria-live="polite">{selectedCV.status}</p>
+      <iframe key={language} src={selectedCV.src} title={selectedCV.title} className="xp-iframe" />
     </div>
   );
 }
 
-function ElinWindow() {
+function FramformWindow() {
   return (
-    <div className="xp-elin">
-      <div className="xp-elin-header">
-        <b>Elin</b> is online <span className="xp-online-dot" /> &mdash; <i>&ldquo;kort, ärligt, utan köphets&rdquo;</i>
+    <div className="xp-framform">
+      <div className="xp-framform-header">
+        <b>FRAMFORM hjälper dig att reda ut nästa steg</b> &mdash; <i>kort och tydligt</i>
       </div>
       <div className="xp-chatlog">
-        <div className="xp-msg xp-msg-user">Bästa mot frizz?</div>
-        <div className="xp-msg xp-msg-elin">
-          Ett anti-frizz serum på fuktigt hår + mindre värme. Jag tipsar gärna om ett prisvärt. 💁‍♀️
+        <div className="xp-msg xp-msg-user">Vi behöver en bättre bokningslösning. Var börjar vi?</div>
+        <div className="xp-msg xp-msg-framform">
+          Börja med det verkliga arbetsflödet: vem bokar, vad ska bekräftas och vilken information behöver personalen se?
         </div>
-        <div className="xp-msg xp-msg-user">Är ett dyrt serum värt det?</div>
-        <div className="xp-msg xp-msg-elin">
-          Oftast inte. Spara pengarna &mdash; jag säger ärligt när du kan skippa ett köp.
+        <div className="xp-msg xp-msg-user">Måste vi bygga allt från början?</div>
+        <div className="xp-msg xp-msg-framform">
+          Inte alltid. Först kartlägger vi vad som redan fungerar och bygger bara det som faktiskt saknas.
         </div>
       </div>
-      <a className="xp-btn-link xp-elin-cta" href="https://www.smartartai.se/fraga-elin" target="_blank" rel="noopener noreferrer">
-        <button>💬 Chat with Elin for real &rarr;</button>
+      <a className="xp-btn-link xp-framform-cta" href="https://framform.se/starta-projekt?mode=guide" target="_blank" rel="noopener noreferrer">
+        <button>Starta projektguiden &rarr;</button>
       </a>
-      <p className="xp-elin-note">
-        Elin is a real AI advisor I built with the Claude API &mdash; streaming answers, tool calls
-        against live product data, and custom guardrails. She answers in Swedish.
+      <p className="xp-framform-note">
+        Detta är en exempelkonversation. Projektguiden hjälper dig att formulera behovet inför en riktig genomgång.
       </p>
     </div>
   );
@@ -160,23 +194,23 @@ function ElinWindow() {
 function ContactWindow() {
   return (
     <div className="xp-contact">
-      <p>Always happy to talk about a project, a role, or an idea.</p>
+      <p>Har du ett projekt, ett problem eller en idé som behöver få form? Hör gärna av dig.</p>
       <div className="field-row-stacked">
-        <label>Email</label>
-        <a href="mailto:hello@smartartai.se">hello@smartartai.se</a>
+        <label>E-post</label>
+        <a href="mailto:hello@framform.se">hello@framform.se</a>
       </div>
       <div className="field-row-stacked">
-        <label>Portfolio hub</label>
-        <a href="https://www.smartartai.se/portfolio" target="_blank" rel="noopener noreferrer">
-          smartartai.se/portfolio
+        <label>Utvalda projekt</label>
+        <a href="https://framform.se/arbete" target="_blank" rel="noopener noreferrer">
+          framform.se/arbete
         </a>
       </div>
       <div className="field-row-stacked">
-        <label>Location</label>
-        <span>Strömsund, Sweden &mdash; remote friendly (CET)</span>
+        <label>Plats</label>
+        <span>Strömsund, Sverige &mdash; arbetar digitalt i hela landet</span>
       </div>
-      <a className="xp-btn-link" href="mailto:hello@smartartai.se">
-        <button>Send me an email</button>
+      <a className="xp-btn-link" href="mailto:hello@framform.se">
+        <button>Skicka e-post</button>
       </a>
     </div>
   );
@@ -186,33 +220,34 @@ function NotepadWindow() {
   const story = `azzam.txt
 ────────────────────────────
 
-Hi, I'm Azzam. 👋
+Hej, jag heter Azzam. 👋
 
-I spent years in Dubai selling phones, then insurance.
-Good training, honestly — you learn to listen to what
-people actually need.
+Min väg till FRAMFORM började långt före den första
+webbplatsen. Åren inom försäljning lärde mig att lyssna
+efter vad människor faktiskt behöver — inte bara vad
+som är enklast att sälja.
 
-Then I moved to the north of Sweden. New language,
-new life, long winters.
+Efter flytten till norra Sverige kom ett nytt språk,
+ett nytt sammanhang och så småningom ett nytt hantverk:
+att forma digitala lösningar som fungerar i vardagen.
 
-In 2025 I started building for the web — with AI as my
-power tool, not my replacement. I direct, review and
-own every line; the AI just helps me move fast.
+Jag grundade FRAMFORM för att samla det arbetet:
+  • webbplatser med tydlig struktur och egen identitet
+  • bokning, beställning och självservice
+  • automatiserade flöden med mänsklig kontroll
+  • prototyper som går att använda, testa och förbättra
 
-Since then I've shipped:
-  • a 300+ page product guide with its own AI advisor
-  • a campaign site built in under six hours
-  • a booking & food-ordering system for the place I work
-  • a QR restaurant menu with a real-time kitchen panel
+AI är ett arbetsverktyg under mänsklig ledning — inte
+en ersättning för analys, omdöme eller ansvar.
 
-This desktop you're clicking around in? Also mine.
-Next.js, one weekend of fun.
+Den här arbetsytan är också ett FRAMFORM-projekt:
+en interaktiv portfolio byggd i Next.js för att visa
+både resultatet och sättet jag tänker på.
 
-The lesson from the phone-shop days still holds:
-be honest, and people come back.
+Form för idéer. System för verkligheten.
 
 — Azzam
-hello@smartartai.se`;
+hello@framform.se`;
   return (
     <div className="xp-notepad">
       <textarea defaultValue={story} spellCheck={false} />
@@ -238,55 +273,55 @@ export function buildRegistry(openWindow) {
   const reg = {
     projects: {
       title: "My Projects",
-      icon: <FolderIcon />,
+      icon: <ShellIcon id="projects" />,
       size: { w: 560, h: 420 },
       content: <ProjectsWindow openWindow={openWindow} />,
     },
     about: {
       title: "My Computer — About Azzam",
-      icon: <ComputerIcon />,
+      icon: <ShellIcon id="about" />,
       size: { w: 620, h: 460 },
       content: <AboutWindow />,
     },
     cv: {
       title: "My CV",
-      icon: <CVIcon />,
+      icon: <ShellIcon id="cv" />,
       size: { w: 760, h: 620 },
       content: <CVWindow />,
     },
-    elin: {
-      title: "Messenger — Fråga Elin",
-      icon: <ChatIcon />,
+    framform: {
+      title: "Guide — Fråga FRAMFORM",
+      icon: <ShellIcon id="framform" />,
       size: { w: 480, h: 640 },
-      content: <ElinWindow />,
+      content: <FramformWindow />,
     },
     contact: {
       title: "Contact Me",
-      icon: <MailIcon />,
+      icon: <ShellIcon id="contact" />,
       size: { w: 460, h: 400 },
       content: <ContactWindow />,
     },
     recycle: {
       title: "Recycle Bin",
-      icon: <BinIcon />,
+      icon: <ShellIcon id="recycle" />,
       size: { w: 460, h: 340 },
       content: <RecycleWindow />,
     },
     minesweeper: {
       title: "Minesweeper",
-      icon: <GameIcon />,
+      icon: <ShellIcon id="minesweeper" />,
       size: { w: 330, h: 470 },
       content: <Minesweeper />,
     },
     notepad: {
       title: "azzam.txt — Notepad",
-      icon: <NotepadIcon />,
+      icon: <ShellIcon id="notepad" />,
       size: { w: 500, h: 520 },
       content: <NotepadWindow />,
     },
     paint: {
       title: "untitled — Paint",
-      icon: <PaintIcon />,
+      icon: <ShellIcon id="paint" />,
       size: { w: 680, h: 560 },
       content: <Paint />,
     },
@@ -294,7 +329,7 @@ export function buildRegistry(openWindow) {
   for (const p of PROJECTS) {
     reg[`project-${p.id}`] = {
       title: `${p.name} — Internet Explorer`,
-      icon: <GlobeIcon />,
+      icon: <ShellIcon id={`project-${p.id}`} />,
       size: { w: 900, h: 640 },
       content: <ProjectWindow project={p} />,
     };
@@ -303,13 +338,13 @@ export function buildRegistry(openWindow) {
 }
 
 export const DESKTOP_ICONS = [
-  { id: "about", label: "My Computer", Icon: ComputerIcon },
-  { id: "projects", label: "My Projects", Icon: FolderIcon },
-  { id: "cv", label: "My CV", Icon: CVIcon },
-  { id: "elin", label: "Fråga Elin", Icon: ChatIcon },
-  { id: "notepad", label: "azzam.txt", Icon: NotepadIcon },
-  { id: "paint", label: "Paint", Icon: PaintIcon },
-  { id: "minesweeper", label: "Minesweeper", Icon: GameIcon },
-  { id: "contact", label: "Contact Me", Icon: MailIcon },
-  { id: "recycle", label: "Recycle Bin", Icon: BinIcon },
+  { id: "about", label: "My Computer" },
+  { id: "projects", label: "My Projects" },
+  { id: "cv", label: "My CV" },
+  { id: "framform", label: "Fråga FRAMFORM" },
+  { id: "notepad", label: "azzam.txt" },
+  { id: "paint", label: "Paint" },
+  { id: "minesweeper", label: "Minesweeper" },
+  { id: "contact", label: "Contact Me" },
+  { id: "recycle", label: "Recycle Bin" },
 ];

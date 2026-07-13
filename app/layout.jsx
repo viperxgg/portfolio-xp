@@ -2,14 +2,14 @@ import "xp.css/dist/XP.css";
 import "./globals.css";
 
 export const metadata = {
-  title: "Azzam Khalaf – Portfolio XP",
+  title: "Azzam Khalaf & FRAMFORM — Interaktiv portfolio",
   description:
-    "Interactive Windows XP-style portfolio of Azzam Khalaf – web developer & digital creator. Log in and explore the desktop.",
+    "Utforska Azzam Khalafs projekt och FRAMFORMs arbete med webb, digitala system och automation.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="sv">
       <body>{children}</body>
     </html>
   );
