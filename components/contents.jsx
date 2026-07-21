@@ -6,10 +6,10 @@ import Paint from "./Paint";
 import { ShellIcon } from "./ShellIcons";
 
 export const PROJECTS = [
-  { id: "elinsval", name: "Elins val", url: "https://www.smartartai.se", caseUrl: "https://framform.se/arbete#elins-val", preview: "/previews/smartartai.png" },
-  { id: "rattvis", name: "Rättvis Demokrati", url: "https://rattvisdemokrati.pro", caseUrl: "https://framform.se/arbete#rattvis-demokrati", preview: "https://framform.se/media/work/rattvis-demokrati.webp" },
-  { id: "rsmh", name: "RSMH Fjällsjö", url: "https://www.rsmhfjallsjo.se", caseUrl: "https://framform.se/arbete#rsmh-fjallsjo", preview: "https://framform.se/media/work/rsmh-fjallsjo.webp" },
-  { id: "menu", name: "Premium Menu", url: "https://premium-menu-8fij.vercel.app", caseUrl: "https://framform.se/arbete#premium-menu", preview: "https://framform.se/media/work/premium-menu.webp" },
+  { id: "elinsval", name: "Elins val", preview: "/previews/smartartai.png" },
+  { id: "rattvis", name: "Rättvis Demokrati", preview: "/previews/rattvis-demokrati.webp" },
+  { id: "rsmh", name: "RSMH Fjällsjö", preview: "/previews/rsmh-fjallsjo.webp" },
+  { id: "menu", name: "Premium Menu", preview: "/previews/premium-menu.webp" },
 ];
 
 function projectsFor(copy) {
@@ -20,11 +20,35 @@ function ProjectsWindow({ openWindow, copy }) {
   return (
     <div className="xp-folder">
       <p className="xp-folder-hint">{copy.folder.hint}</p>
-      <div className="xp-folder-grid">
+      <div className="xp-project-grid">
         {projectsFor(copy).map((project) => (
-          <button key={project.id} className="xp-file" type="button" onClick={() => openWindow(`project-${project.id}`)}>
-            <ShellIcon id={`project-${project.id}`} />
-            <span>{project.name}</span>
+          <button
+            key={project.id}
+            className="xp-project-card"
+            type="button"
+            aria-label={`${copy.folder.openLabel}: ${project.name}`}
+            aria-haspopup="dialog"
+            onClick={(event) => openWindow(`project-${project.id}`, event.currentTarget)}
+          >
+            <span className="xp-project-card__media">
+              <img
+                src={project.preview}
+                alt={`${project.name} — ${copy.folder.imageAlt}`}
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <span className="xp-project-card__body">
+              <span className="xp-project-card__title">
+                <ShellIcon id={`project-${project.id}`} />
+                <strong><bdi dir="auto">{project.name}</bdi></strong>
+              </span>
+              <span className="xp-project-card__description">{project.desc}</span>
+              <span className="xp-project-card__tags" aria-label={copy.folder.scopeLabel}>
+                {project.tags.split(" · ").map((tag) => <span key={tag}>{tag}</span>)}
+              </span>
+              <span className="xp-project-card__open">{copy.folder.openDetails} <span aria-hidden="true">{copy.folder.detailsArrow}</span></span>
+            </span>
           </button>
         ))}
       </div>
@@ -32,21 +56,39 @@ function ProjectsWindow({ openWindow, copy }) {
   );
 }
 
-function ProjectWindow({ project, copy }) {
+function ProjectDetailWindow({ project, copy }) {
   return (
-    <div className="xp-project">
-      <div className="xp-project-bar">
-        <span className="xp-address">{copy.address}</span>
-        <bdi className="xp-address-box" dir="ltr">{project.url}</bdi>
-        <a className="xp-btn-link xp-button-anchor" href={project.url} target="_blank" rel="noopener noreferrer">{copy.openWebsite}</a>
-        <a className="xp-btn-link xp-button-anchor" href={project.caseUrl} target="_blank" rel="noopener noreferrer">{copy.viewCase}</a>
+    <article className="xp-project-detail">
+      <div className="xp-project-detail__media">
+        <img src={project.preview} alt={`${project.name} — ${copy.imageAlt}`} />
       </div>
-      <p className="xp-project-desc">{project.desc} <em dir="auto">({project.tags})</em></p>
-      <a className="xp-preview" href={project.url} target="_blank" rel="noopener noreferrer">
-        <img src={project.preview} alt={`${project.name} — ${copy.previewAlt}`} />
-        <span className="xp-preview-btn xp-button-anchor">{copy.openPublished} <span aria-hidden="true">→</span></span>
-      </a>
-    </div>
+      <div className="xp-project-detail__content">
+        <header className="xp-project-detail__header">
+          <ShellIcon id={`project-${project.id}`} />
+          <div>
+            <p>{project.category}</p>
+            <h2><bdi dir="auto">{project.name}</bdi></h2>
+          </div>
+        </header>
+        <p className="xp-project-detail__lead">{project.desc}</p>
+        <section>
+          <h3>{copy.roleLabel}</h3>
+          <p>{project.role}</p>
+        </section>
+        <section>
+          <h3>{copy.builtLabel}</h3>
+          <ul>
+            {project.highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}
+          </ul>
+        </section>
+        <section>
+          <h3>{copy.techLabel}</h3>
+          <ul className="xp-project-detail__tech">
+            {project.tech.map((technology) => <li key={technology}><bdi dir="ltr">{technology}</bdi></li>)}
+          </ul>
+        </section>
+      </div>
+    </article>
   );
 }
 
@@ -148,7 +190,7 @@ export function buildRegistry(openWindow, dictionary, locale) {
   const copy = dictionary.personal;
   const games = dictionary.games;
   const reg = {
-    projects: { title: copy.registry.projects, icon: <ShellIcon id="projects" />, size: { w: 560, h: 420 }, content: <ProjectsWindow openWindow={openWindow} copy={copy} /> },
+    projects: { title: copy.registry.projects, icon: <ShellIcon id="projects" />, size: { w: 920, h: 700 }, content: <ProjectsWindow openWindow={openWindow} copy={copy} /> },
     about: { title: copy.registry.about, icon: <ShellIcon id="about" />, size: { w: 620, h: 460 }, content: <AboutWindow copy={copy.about} /> },
     cv: { title: copy.registry.cv, icon: <ShellIcon id="cv" />, size: { w: 760, h: 620 }, content: <CVWindow copy={copy.cv} locale={locale} /> },
     framform: { title: copy.registry.guide, icon: <ShellIcon id="framform" />, size: { w: 480, h: 640 }, content: <FramformWindow copy={copy.guide} /> },
@@ -161,12 +203,13 @@ export function buildRegistry(openWindow, dictionary, locale) {
 
   for (const project of projectsFor(copy)) {
     reg[`project-${project.id}`] = {
-      title: `${project.name} — ${copy.registry.browserSuffix}`,
+      title: `${project.name} — ${copy.projectDetail.titleSuffix}`,
       icon: <ShellIcon id={`project-${project.id}`} />,
-      size: { w: 900, h: 640 },
-      content: <ProjectWindow project={project} copy={copy.project} />,
+      size: { w: 880, h: 650 },
+      content: <ProjectDetailWindow project={project} copy={copy.projectDetail} />,
     };
   }
+
   return reg;
 }
 
